@@ -1,0 +1,27 @@
+[
+  {
+    "family": "Inter",
+    "category": "sans-serif",
+    "variants": [
+      { "weight": 400, "style": "normal", "url": "/api/v1/storage/fonts/inter-regular.woff2" },
+      { "weight": 500, "style": "normal", "url": "/api/v1/storage/fonts/inter-medium.woff2" },
+      { "weight": 700, "style": "normal", "url": "/api/v1/storage/fonts/inter-bold.woff2" }
+    ]
+  },
+  {
+    "family": "Roboto",
+    "category": "sans-serif",
+    "variants": [
+      { "weight": 400, "style": "normal", "url": "/api/v1/storage/fonts/roboto-regular.woff2" },
+      { "weight": 700, "style": "normal", "url": "/api/v1/storage/fonts/roboto-bold.woff2" }
+    ]
+  },
+  {
+    "family": "Playfair Display",
+    "category": "serif",
+    "variants": [
+      { "weight": 400, "style": "normal", "url": "/api/v1/storage/fonts/playfair-regular.woff2" },
+      { "weight": 700, "style": "normal", "url": "/api/v1/storage/fonts/playfair-bold.woff2" }
+    ]
+  }
+]
