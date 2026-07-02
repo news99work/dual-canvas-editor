@@ -23,8 +23,8 @@ const validCanvasState = {
 
 describe('Export Service', () => {
   beforeEach(() => {
-    // Purge all expired jobs first
-    exportService.purgeExpiredJobs();
+    // Clear all jobs — purgeExpiredJobs only removes expired ones
+    exportService.clearAllJobs();
   });
 
   describe('startExport', () => {

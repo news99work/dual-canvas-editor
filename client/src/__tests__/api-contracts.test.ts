@@ -587,10 +587,12 @@ describe('waitForExport', () => {
     mockFetch.mockResolvedValueOnce(mockResponse({ data: failedJob }));
 
     const waitPromise = waitForExport('exp-1', { interval: 100, maxRetries: 5 });
+    // Attach rejection handler BEFORE advancing timers so unhandled rejection is suppressed
+    const rejectAssert = expect(waitPromise).rejects.toThrow('Export failed: Processing timeout');
 
     await vi.advanceTimersByTimeAsync(100);
 
-    await expect(waitPromise).rejects.toThrow('Export failed: Processing timeout');
+    await rejectAssert;
   });
 
   it('rejects after maxRetries exceeded', async () => {
@@ -605,23 +607,27 @@ describe('waitForExport', () => {
     mockFetch.mockResolvedValue(mockResponse({ data: pendingJob }));
 
     const waitPromise = waitForExport('exp-1', { interval: 100, maxRetries: 3 });
+    // Attach rejection handler BEFORE advancing timers
+    const rejectAssert = expect(waitPromise).rejects.toThrow('timed out');
 
     // Advance through all retries
     for (let i = 0; i < 5; i++) {
       await vi.advanceTimersByTimeAsync(100);
     }
 
-    await expect(waitPromise).rejects.toThrow('timed out');
+    await rejectAssert;
   });
 
   it('rejects on network error during poll', async () => {
     mockFetch.mockRejectedValue(new TypeError('Network error'));
 
     const waitPromise = waitForExport('exp-1', { interval: 100, maxRetries: 3 });
+    // Attach rejection handler BEFORE advancing timers
+    const rejectAssert = expect(waitPromise).rejects.toThrow();
 
     await vi.advanceTimersByTimeAsync(100);
 
-    await expect(waitPromise).rejects.toThrow();
+    await rejectAssert;
   });
 });
 

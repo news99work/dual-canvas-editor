@@ -8,3 +8,5 @@ coverage
 .next
 .turbo
 server/exports/
+server/temp/
+server/meta/

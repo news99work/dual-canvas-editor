@@ -8,8 +8,11 @@ import { config } from '../config.js';
 
 const ASSETS_FILE = path.join(config.metaDir, 'assets.json');
 
-// Reset the asset store before each test by writing empty array to the real meta file
+// Reset the asset store before each test:
+// 1. Clear module-level in-memory cache
+// 2. Write empty array to the real meta file so next ensureLoaded() sees clean state
 beforeEach(async () => {
+  assetService.resetCache();
   await fs.mkdir(config.metaDir, { recursive: true });
   await fs.writeFile(ASSETS_FILE, '[]', 'utf-8');
 });

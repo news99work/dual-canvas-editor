@@ -24,6 +24,12 @@ async function persist(): Promise<void> {
   await fs.writeFile(ASSETS_FILE, JSON.stringify(assets, null, 2), 'utf-8');
 }
 
+/** Reset in-memory cache — used in tests */
+export function resetCache(): void {
+  assets = [];
+  loaded = false;
+}
+
 /** Save a new asset */
 export async function createAsset(asset: Asset): Promise<Asset> {
   await ensureLoaded();

@@ -42,6 +42,12 @@ export function purgeExpiredJobs(): number {
   return count;
 }
 
+/** Clear all jobs — used in tests */
+export function clearAllJobs(): void {
+  jobs.clear();
+  hashIndex.clear();
+}
+
 /**
  * Start an export job.
  * Computes SHA-256 hash, checks idempotency, then queues for processing.
@@ -95,10 +101,12 @@ export async function startExport(
   jobs.set(job.id, job);
   hashIndex.set(hash, job.id);
 
-  // Process asynchronously
-  processJob(job.id, parsed.data, format, quality).catch((err) => {
-    console.error(`[export] Job ${job.id} failed:`, err.message);
-  });
+  // Defer processing to next microtask so status is 'pending' when returned
+  setTimeout(() => {
+    processJob(job.id, parsed.data, format, quality).catch((err) => {
+      console.error(`[export] Job ${job.id} failed:`, err.message);
+    });
+  }, 0);
 
   return { job, isNew: true };
 }

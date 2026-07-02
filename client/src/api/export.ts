@@ -39,34 +39,49 @@ export async function waitForExport(
 ): Promise<ExportJob> {
   const { interval = 2500, maxRetries = 60 } = options;
   let retries = 0;
+  let settled = false;
 
   return new Promise<ExportJob>((resolve, reject) => {
     const poll = async () => {
       try {
         const job = await pollExport(jobId);
 
+        if (settled) return;
+
         if (job.status === 'done') {
+          settled = true;
           resolve(job);
           return;
         }
 
         if (job.status === 'failed') {
+          settled = true;
           reject(new Error(`Export failed: ${job.error || 'Unknown error'}`));
           return;
         }
 
         retries++;
         if (retries >= maxRetries) {
+          settled = true;
           reject(new Error(`Export timed out after ${maxRetries * interval}ms`));
           return;
         }
 
         setTimeout(poll, interval);
       } catch (err) {
-        reject(err);
+        if (!settled) {
+          settled = true;
+          reject(err);
+        }
       }
     };
 
-    poll();
+    // Start polling; catch any synchronous or early rejection
+    Promise.resolve().then(poll).catch((err) => {
+      if (!settled) {
+        settled = true;
+        reject(err);
+      }
+    });
   });
 }
