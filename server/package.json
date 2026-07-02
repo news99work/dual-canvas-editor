@@ -7,6 +7,8 @@
     "dev": "tsx watch src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf dist .tsbuildinfo"
@@ -15,6 +17,7 @@
     "cors": "^2.8.5",
     "express": "^5.1.0",
     "express-rate-limit": "^8.5.2",
+    "helmet": "^8.2.0",
     "multer": "^2.2.0",
     "sharp": "^0.35.3",
     "uuid": "^14.0.1",
@@ -25,8 +28,11 @@
     "@types/express": "^5.0.2",
     "@types/multer": "^2.2.0",
     "@types/node": "^22.15.18",
+    "@types/supertest": "^7.2.0",
     "@types/uuid": "^11.0.0",
+    "supertest": "^7.2.2",
     "tsx": "^4.19.3",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "vitest": "^4.1.9"
   }
 }
