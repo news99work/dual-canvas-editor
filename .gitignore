@@ -7,3 +7,4 @@ build
 coverage
 .next
 .turbo
+server/exports/
