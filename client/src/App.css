@@ -1,0 +1,93 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --color-bg: #0f1117;
+  --color-surface: #1a1d27;
+  --color-border: #2a2d3a;
+  --color-text: #e1e3e8;
+  --color-text-muted: #8b8fa3;
+  --color-accent: #6c63ff;
+  --radius: 8px;
+}
+
+html {
+  font-family:
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif;
+  color-scheme: dark;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  min-height: 100vh;
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.app-header {
+  padding: 24px 32px;
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+
+.app-header h1 {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.app-header p {
+  font-size: 14px;
+  color: var(--color-text-muted);
+}
+
+.app-main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+}
+
+.canvas-placeholder {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  width: 100%;
+  max-width: 1200px;
+}
+
+.canvas-slot {
+  aspect-ratio: 16 / 10;
+  border: 2px dashed var(--color-border);
+  border-radius: var(--radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-surface);
+  transition: border-color 0.2s;
+}
+
+.canvas-slot span {
+  font-size: 14px;
+  color: var(--color-text-muted);
+}
+
+.canvas-slot--active {
+  border-style: solid;
+  border-color: var(--color-accent);
+}
