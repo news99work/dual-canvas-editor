@@ -11,12 +11,12 @@ type Tab = 'color' | 'text' | 'asset' | 'size' | 'export';
 export default function ControlPanel() {
   const [tab, setTab] = useState<Tab>('color');
 
-  const tabs: { key: Tab; label: string; icon: string }[] = [
-    { key: 'color', label: 'Màu áo', icon: '🎨' },
-    { key: 'text', label: 'Chữ', icon: '🔤' },
-    { key: 'asset', label: 'Kho hình', icon: '🖼️' },
-    { key: 'size', label: 'Size', icon: '📏' },
-    { key: 'export', label: 'Xuất file', icon: '📥' },
+  const tabs: { key: Tab; icon: string }[] = [
+    { key: 'color', icon: '🎨' },
+    { key: 'text', icon: '🔤' },
+    { key: 'asset', icon: '🖼️' },
+    { key: 'size', icon: '📏' },
+    { key: 'export', icon: '📥' },
   ];
 
   return (
@@ -28,17 +28,17 @@ export default function ControlPanel() {
             className={`control-tab ${tab === t.key ? 'control-tab--active' : ''}`}
             onClick={() => setTab(t.key)}
           >
-            <span>{t.icon}</span>
-            <span className="control-tab__label">{t.label}</span>
+            {t.icon}
           </button>
         ))}
       </div>
-      <div className="control-panel__content">
-        {tab === 'color' && <ColorPicker />}
-        {tab === 'text' && <TextTool />}
-        {tab === 'asset' && <AssetLibrary />}
-        {tab === 'size' && <SizeSelector />}
-        {tab === 'export' && <ExportButton />}
+
+      <div className="panel-section">
+        {tab === 'color' && <><div className="panel-section__title">Màu áo</div><ColorPicker /></>}
+        {tab === 'text' && <><div className="panel-section__title">Thêm chữ</div><TextTool /></>}
+        {tab === 'asset' && <><div className="panel-section__title">Kho hình in</div><AssetLibrary /></>}
+        {tab === 'size' && <><div className="panel-section__title">Chọn size & số lượng</div><SizeSelector /></>}
+        {tab === 'export' && <><div className="panel-section__title">Xuất file in</div><ExportButton /></>}
       </div>
     </div>
   );
