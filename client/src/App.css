@@ -1,108 +1,61 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
 .app {
   min-height: 100vh;
-  background: #f9fafb;
+  background: #f5f5f7;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 .app-header {
-  background: linear-gradient(135deg, #1e40af, #2563eb);
+  background: linear-gradient(135deg, #1a1a2e, #16213e);
   color: #fff;
-  padding: 14px 24px;
+  padding: 12px 24px;
   text-align: center;
+  border-bottom: 2px solid #e94560;
 }
 
 .app-header h1 {
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 700;
 }
 
+/* ====== BIGSTEP-STYLE 3-COLUMN LAYOUT ====== */
 .app-main {
-  padding: 16px;
-  max-width: 1400px;
-  margin: 0 auto;
+  height: calc(100vh - 52px);
+  overflow: hidden;
 }
 
-/* ====== LAYOUT ====== */
 .editor-layout {
   display: flex;
-  gap: 16px;
-  align-items: flex-start;
+  height: 100%;
 }
 
-/* Dual Canvas */
-.dual-canvas {
-  flex: 1;
-  min-width: 0;
-}
-
-.dual-canvas__toolbar {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 12px;
-}
-
-.view-toggle {
-  padding: 8px 20px;
-  border-radius: 8px;
-  border: 1px solid #d1d5db;
+/* Left sidebar — Tools */
+.sidebar {
   background: #fff;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
-  transition: all 0.15s;
-}
-
-.view-toggle:hover {
-  background: #f3f4f6;
-}
-
-.view-toggle--active {
-  background: #2563eb;
-  color: #fff;
-  border-color: #2563eb;
-}
-
-.dual-canvas__grid {
-  display: flex;
-  gap: 12px;
-  justify-content: center;
-  flex-wrap: wrap;
-}
-
-.editor-canvas {
-  transition: border-color 0.2s;
-}
-
-/* Control Panel */
-.control-panel {
-  width: 320px;
+  border-right: 1px solid #e5e7eb;
+  overflow-y: auto;
   flex-shrink: 0;
-  background: #fff;
-  border-radius: 12px;
-  border: 1px solid #e5e7eb;
-  overflow: hidden;
-  position: sticky;
-  top: 16px;
-  max-height: calc(100vh - 32px);
+}
+
+.sidebar--left {
+  width: 260px;
+}
+
+.control-panel {
+  padding: 0;
 }
 
 .control-panel__tabs {
   display: flex;
   border-bottom: 1px solid #e5e7eb;
-  background: #f9fafb;
-  overflow-x: auto;
+  background: #fafafa;
+  padding: 0 4px;
 }
 
 .control-tab {
   flex: 1;
-  min-width: 50px;
-  padding: 10px 6px;
+  padding: 12px 4px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -116,80 +69,167 @@
   transition: all 0.15s;
 }
 
-.control-tab:hover {
-  background: #f3f4f6;
-}
-
+.control-tab:hover { background: #f3f4f6; }
 .control-tab--active {
-  color: #2563eb;
-  border-bottom-color: #2563eb;
-  background: #eff6ff;
+  color: #e94560;
+  border-bottom-color: #e94560;
+  background: #fff;
 }
 
-.control-tab__label {
-  font-size: 10px;
-  white-space: nowrap;
-}
+.control-tab__label { font-size: 10px; white-space: nowrap; }
 
 .control-panel__content {
   padding: 16px;
+}
+
+/* Center — Canvas Area */
+.canvas-area {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: #f0f0f3;
+  overflow: auto;
+}
+
+.dual-canvas {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.dual-canvas__toolbar {
+  display: flex;
+  gap: 8px;
+  background: #fff;
+  padding: 8px 16px;
+  border-radius: 12px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+}
+
+.view-toggle {
+  padding: 8px 20px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.15s;
+}
+
+.view-toggle--active {
+  background: #e94560;
+  color: #fff;
+  border-color: #e94560;
+}
+
+.dual-canvas__grid {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.editor-canvas {
+  transition: border-color 0.2s;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+
+/* Right sidebar — Properties */
+.sidebar--right {
+  width: 280px;
+  border-right: none;
+  border-left: 1px solid #e5e7eb;
+}
+
+.properties-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.properties-panel__header {
+  padding: 14px 16px;
+  font-weight: 700;
+  font-size: 14px;
+  border-bottom: 1px solid #e5e7eb;
+  background: #fafafa;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.properties-panel__body {
+  padding: 16px;
   overflow-y: auto;
-  max-height: calc(100vh - 140px);
+  flex: 1;
+}
+
+.properties-panel__empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+  text-align: center;
+}
+
+.prop-group {
+  margin-bottom: 16px;
+}
+
+.prop-label {
+  font-size: 11px;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.prop-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.prop-row span {
+  font-size: 11px;
+  color: #9ca3af;
+  width: 14px;
+}
+
+.prop-input {
+  flex: 1;
+  padding: 6px 8px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.prop-input:focus {
+  border-color: #e94560;
+  box-shadow: 0 0 0 2px rgba(233,69,96,0.1);
 }
 
 /* ====== MOBILE ====== */
 @media (max-width: 1024px) {
-  .dual-canvas__grid {
-    flex-direction: column;
-    align-items: center;
-  }
+  .sidebar--left { width: 220px; }
+  .sidebar--right { width: 240px; }
 }
 
 @media (max-width: 768px) {
-  .app-main {
-    padding: 8px;
-  }
-
-  .editor-layout {
-    flex-direction: column;
-  }
-
-  .dual-canvas__grid {
-    flex-direction: row;
-    justify-content: center;
-    gap: 8px;
-    overflow-x: auto;
-    padding-bottom: 4px;
-  }
-
-  .control-panel {
-    width: 100%;
-    position: relative;
-    top: 0;
-    max-height: none;
-    border-radius: 12px 12px 0 0;
-  }
-
-  .control-panel__content {
-    max-height: 50vh;
-  }
-
-  .dual-canvas__toolbar {
-    justify-content: center;
-  }
-}
-
-@media (max-width: 480px) {
-  .app-header {
-    padding: 10px 12px;
-  }
-
-  .app-header h1 {
-    font-size: 16px;
-  }
-
-  .dual-canvas__grid {
-    flex-direction: column;
-    align-items: center;
-  }
+  .editor-layout { flex-direction: column; }
+  .sidebar { width: 100% !important; border-right: none; border-left: none; max-height: 30vh; }
+  .sidebar--left { border-bottom: 1px solid #e5e7eb; order: 3; }
+  .sidebar--right { order: 2; }
+  .canvas-area { order: 1; flex-shrink: 0; min-height: 50vh; }
+  .dual-canvas__grid { flex-direction: column; align-items: center; }
 }
