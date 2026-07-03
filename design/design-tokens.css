@@ -1,0 +1,174 @@
+/* ═══════════════════════════════════════════════════════════
+   Dual Canvas Editor — Design Tokens v1.0.0
+   Desktop-first dark theme. Consumed via CSS custom properties.
+   Compatible: React 19 + Fabric.js + Vite
+   ═══════════════════════════════════════════════════════════ */
+
+:root {
+  /* ── Color System ── */
+
+  /* Background hierarchy */
+  --dc-bg-app:           #0b0d13;
+  --dc-bg-surface:       #12141c;
+  --dc-bg-elevated:      #1a1d28;
+  --dc-bg-overlay:       #1f2230;
+  --dc-bg-tooltip:       #2a2d3d;
+
+  /* Border */
+  --dc-border-default:   #252836;
+  --dc-border-light:     #333648;
+  --dc-border-focus:     #6c63ff;
+
+  /* Text hierarchy */
+  --dc-text-primary:     #e4e6ed;
+  --dc-text-secondary:   #9ca0b0;
+  --dc-text-tertiary:    #6b6f80;
+  --dc-text-inverse:     #0b0d13;
+  --dc-text-link:        #8b83ff;
+
+  /* Brand accent — purple */
+  --dc-accent:           #6c63ff;
+  --dc-accent-hover:     #7d75ff;
+  --dc-accent-pressed:   #5a52e0;
+  --dc-accent-subtle:    rgba(108, 99, 255, 0.12);
+  --dc-accent-muted:     rgba(108, 99, 255, 0.06);
+
+  /* Semantic colors */
+  --dc-success:          #34d399;
+  --dc-success-subtle:   rgba(52, 211, 153, 0.12);
+  --dc-warning:          #fbbf24;
+  --dc-warning-subtle:   rgba(251, 191, 36, 0.12);
+  --dc-error:            #f87171;
+  --dc-error-subtle:     rgba(248, 113, 113, 0.10);
+  --dc-info:             #60a5fa;
+  --dc-info-subtle:      rgba(96, 165, 250, 0.10);
+
+  /* Canvas-specific colors */
+  --dc-canvas-bg:        #1e2130;
+  --dc-canvas-grid:      rgba(255, 255, 255, 0.04);
+  --dc-canvas-print-zone:# rgba(108, 99, 255, 0.15);
+  --dc-canvas-selection: #6c63ff;
+  --dc-canvas-handle:    #ffffff;
+  --dc-canvas-handle-bg: #6c63ff;
+
+  /* ── Typography ── */
+  --dc-font-sans:        'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --dc-font-mono:        'JetBrains Mono', 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+  --dc-font-display:     'Inter', system-ui, sans-serif;
+
+  /* Type scale */
+  --dc-text-xs:          0.6875rem;   /* 11px */
+  --dc-text-sm:          0.75rem;     /* 12px */
+  --dc-text-body-sm:     0.8125rem;   /* 13px */
+  --dc-text-body:        0.875rem;    /* 14px */
+  --dc-text-md:          1rem;        /* 16px */
+  --dc-text-lg:          1.25rem;     /* 20px */
+  --dc-text-xl:          1.5rem;      /* 24px */
+  --dc-text-2xl:         2rem;        /* 32px */
+
+  /* Font weights */
+  --dc-weight-normal:    400;
+  --dc-weight-medium:    500;
+  --dc-weight-semibold:  600;
+  --dc-weight-bold:      700;
+
+  /* Line heights */
+  --dc-leading-tight:    1.25;
+  --dc-leading-normal:   1.5;
+  --dc-leading-relaxed:  1.75;
+
+  /* ── Spacing Scale (4px base) ── */
+  --dc-space-0:          0;
+  --dc-space-1:          0.25rem;    /* 4px */
+  --dc-space-2:          0.5rem;     /* 8px */
+  --dc-space-3:          0.75rem;    /* 12px */
+  --dc-space-4:          1rem;       /* 16px */
+  --dc-space-5:          1.25rem;    /* 20px */
+  --dc-space-6:          1.5rem;     /* 24px */
+  --dc-space-8:          2rem;       /* 32px */
+  --dc-space-10:         2.5rem;     /* 40px */
+  --dc-space-12:         3rem;       /* 48px */
+
+  /* ── Border Radius ── */
+  --dc-radius-none:      0;
+  --dc-radius-sm:        0.25rem;    /* 4px */
+  --dc-radius-md:        0.5rem;     /* 8px */
+  --dc-radius-lg:        0.75rem;    /* 12px */
+  --dc-radius-xl:        1rem;       /* 16px */
+  --dc-radius-full:      9999px;
+
+  /* ── Shadows ── */
+  --dc-shadow-none:      0 0 0 0 transparent;
+  --dc-shadow-sm:        0 1px 2px rgba(0, 0, 0, 0.3);
+  --dc-shadow-md:        0 4px 12px rgba(0, 0, 0, 0.4);
+  --dc-shadow-lg:        0 8px 24px rgba(0, 0, 0, 0.5);
+  --dc-shadow-xl:        0 16px 48px rgba(0, 0, 0, 0.6);
+  --dc-shadow-canvas:    0 0 0 1px var(--dc-border-default),
+                         0 2px 16px rgba(0, 0, 0, 0.3);
+  --dc-shadow-panel:     0 0 0 1px var(--dc-border-default),
+                         0 8px 32px rgba(0, 0, 0, 0.45);
+  --dc-shadow-tooltip:   0 4px 16px rgba(0, 0, 0, 0.55);
+
+  /* ── Transitions ── */
+  --dc-transition-fast:   120ms ease;
+  --dc-transition-normal: 200ms ease;
+  --dc-transition-slow:   300ms ease;
+  --dc-transition-expand: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* ── Z-Index Layers ── */
+  --dc-z-canvas:          1;
+  --dc-z-canvas-overlay:  10;
+  --dc-z-toolbar:         20;
+  --dc-z-control-panel:   30;
+  --dc-z-dropdown:        100;
+  --dc-z-modal-backdrop:  200;
+  --dc-z-modal:           210;
+  --dc-z-tooltip:         300;
+  --dc-z-context-menu:    400;
+  --dc-z-toast:           500;
+
+  /* ── Layout ── */
+  --dc-header-height:     56px;
+  --dc-sidebar-width:     320px;
+  --dc-sidebar-collapsed: 48px;
+  --dc-canvas-min-width:  300px;
+  --dc-canvas-min-height: 400px;
+  --dc-toolbar-height:    44px;
+  --dc-bottom-sheet-height: 60vh;
+
+  /* ── Focus Rings ── */
+  --dc-focus-ring:        0 0 0 2px var(--dc-bg-app),
+                          0 0 0 4px var(--dc-accent);
+  --dc-focus-ring-inset:  inset 0 0 0 2px var(--dc-accent);
+
+  /* ── Scrollbar ── */
+  scrollbar-width: thin;
+  scrollbar-color: var(--dc-border-light) transparent;
+}
+
+/* ── Print Area Constraint (Aspect ~2:3 print zone) ── */
+:root {
+  --dc-print-zone-ratio: 2 / 3;
+  --dc-print-dpi:        300;
+  --dc-print-width-mm:   200;
+  --dc-print-height-mm:  300;
+}
+
+/* ── Scrollbar Webkit ── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--dc-border-light);
+  border-radius: var(--dc-radius-full);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--dc-text-tertiary);
+}
