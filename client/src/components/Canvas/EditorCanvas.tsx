@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { Canvas, Rect, FabricImage } from 'fabric';
+import { Canvas, Rect, FabricImage, Group, FabricText, loadSVGFromURL } from 'fabric';
 import { useCanvasState, type CanvasSide, type CanvasLayer } from '../../hooks/useCanvasState';
 
 interface EditorCanvasProps {
@@ -38,8 +38,8 @@ export default function EditorCanvas({ side, width, height, printArea }: EditorC
     });
 
     // Load SVG garment mockup
-    (fabric as any).loadSVGFromURL('/assets/shirt-front.svg').then((objects: any[]) => {
-      const group = new (fabric as any).Group(objects, {
+    loadSVGFromURL('/assets/shirt-front.svg').then((objects: any[]) => {
+      const group = new Group(objects, {
         left: width / 2,
         top: height / 2,
         originX: 'center',
@@ -134,7 +134,7 @@ export default function EditorCanvas({ side, width, height, printArea }: EditorC
           fc.add(img); em.set(layer.id, img); fc.requestRenderAll();
         });
       } else {
-        const txt = new (fabric as any).Text(layer.text || '', { left: layer.x, top: layer.y, fontSize: layer.fontSize || 24, fontFamily: layer.fontFamily || 'Inter', fill: layer.fill || '#000', angle: layer.rotation });
+        const txt = new FabricText(layer.text || '', { left: layer.x, top: layer.y, fontSize: layer.fontSize || 24, fontFamily: layer.fontFamily || 'Inter', fill: layer.fill || '#000', angle: layer.rotation });
         (txt as any).__layerId = layer.id; (txt as any).__layerType = 'text';
         txt.setControlsVisibility({ mtr: true });
         fc.add(txt); em.set(layer.id, txt);
