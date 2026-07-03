@@ -1,5 +1,4 @@
-// ── Centralized Error Handler Middleware ──
-import type { Request, Response, NextFunction } from 'express';
+import type { Response, NextFunction } from 'express';
 
 export interface ApiError {
   code: string;
@@ -12,7 +11,7 @@ export class AppError extends Error {
     public statusCode: number,
     public code: string,
     message: string,
-    public details?: unknown[],
+    public details?: unknown[]
   ) {
     super(message);
     this.name = 'AppError';
@@ -20,7 +19,12 @@ export class AppError extends Error {
 }
 
 /** Catch-all error handler — registered last in middleware chain */
-export function errorHandler(err: Error, _req: Request, res: Response, _next: NextFunction): void {
+export function errorHandler(
+  err: Error,
+  req: any,
+  res: Response,
+  _next: NextFunction
+): void {
   const isProduction = process.env.NODE_ENV === 'production';
 
   if (err instanceof AppError) {
@@ -35,22 +39,16 @@ export function errorHandler(err: Error, _req: Request, res: Response, _next: Ne
     return;
   }
 
-  // Multer errors
   if (err.name === 'MulterError') {
-    const body: ApiError = {
-      code: 'UPLOAD_ERROR',
-      message: err.message,
-    };
-    res.status(400).json({ error: body });
+    res.status(400).json({ error: { code: 'UPLOAD_ERROR', message: err.message } });
     return;
   }
 
-  // Unknown / unhandled errors
-  console.error(`[${_req.id || '??'}] Unhandled error:`, err);
-
-  const body: ApiError = {
-    code: 'INTERNAL_ERROR',
-    message: isProduction ? 'An unexpected error occurred' : err.message || 'Internal Server Error',
-  };
-  res.status(500).json({ error: body });
+  console.error(`[${req.id || '??'}] Unhandled error:`, err);
+  res.status(500).json({
+    error: {
+      code: 'INTERNAL_ERROR',
+      message: isProduction ? 'An unexpected error occurred' : err.message || 'Internal Server Error',
+    },
+  });
 }

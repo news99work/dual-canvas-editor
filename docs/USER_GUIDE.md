@@ -1,361 +1,266 @@
 # Hướng dẫn Sử dụng — Dual Canvas Editor
 
-> **Hướng dẫn cơ bản cho người dùng thiết kế áo thun đôi (Nam/Nữ)**
+> **Thiết kế áo thun đôi (Nam/Nữ) — từ upload ảnh đến xuất file in**
 
 ---
 
 ## Mục lục
 
-1. [Giới thiệu](#1-giới-thiệu)
-2. [Giao diện Tổng quan](#2-giao-diện-tổng-quan)
-3. [Thao tác Cơ bản](#3-thao-tác-cơ-bản)
-4. [Thiết kế với Text](#4-thiết-kế-với-text)
-5. [Thiết kế với Ảnh](#5-thiết-kế-với-ảnh)
-6. [Quản lý Layer](#6-quản-lý-layer)
-7. [Chế độ Mirror](#7-chế-độ-mirror)
-8. [Xuất File (Export)](#8-xuất-file-export)
-9. [Phím tắt](#9-phím-tắt)
-10. [Mẹo và Thủ thuật](#10-mẹo-và-thủ-thuật)
-11. [Yêu cầu Hệ thống](#11-yêu-cầu-hệ-thống)
+1. [Giao diện Tổng quan](#1-giao-diện-tổng-quan)
+2. [Upload Ảnh](#2-upload-ảnh)
+3. [Thêm & Chỉnh sửa Text](#3-thêm--chỉnh-sửa-text)
+4. [Quản lý Layer](#4-quản-lý-layer)
+5. [Chế độ Mirror](#5-chế-độ-mirror)
+6. [Xuất File (Export)](#6-xuất-file-export)
+7. [Phím tắt & Touch Gestures](#7-phím-tắt--touch-gestures)
+8. [Mẹo thiết kế](#8-mẹo-thiết-kế)
 
 ---
 
-## 1. Giới thiệu
-
-**Dual Canvas Editor** là công cụ thiết kế trực tuyến giúp bạn tạo hình in cho áo thun đôi — thiết kế đồng thời trên hai mẫu áo Nam và Nữ.
-
-**Bạn có thể:**
-- ✏️ Thêm text với font, màu sắc, kích thước tùy chỉnh
-- 🖼️ Upload ảnh và đặt lên áo
-- 🎨 Thay đổi màu áo
-- 🔄 Đồng bộ thiết kế giữa áo Nam và Nữ (Mirror Mode)
-- 📤 Xuất file in chất lượng cao (PNG 2400×3600)
-
-**Lưu ý:** Đây là phiên bản MVP (Minimum Viable Product). Thiết kế của bạn được lưu trong phiên làm việc và file export được giữ trong 1 giờ. **Hãy tải file về ngay sau khi export.**
-
----
-
-## 2. Giao diện Tổng quan
+## 1. Giao diện Tổng quan
 
 ```
 ┌──────────────────────────────────────────────────────────┐
-│  HEADER: Logo | Undo/Redo | Mirror Toggle | Export       │
+│  HEADER    [Undo] [Redo] [Mirror 🔄] [⬇ Export]         │
 ├──────────────────────┬───────────────────────────────────┤
 │                      │                                   │
 │   ÁO NAM             │      ÁO NỮ                       │
 │   ┌──────────────┐   │      ┌──────────────┐            │
-│   │  Vùng in     │   │      │  Vùng in     │            │
-│   │  (có viền)   │   │      │  (có viền)   │            │
+│   │ Vùng in 2:3  │   │      │ Vùng in 2:3  │            │
 │   │              │   │      │              │            │
-│   │  Text/Ảnh    │   │      │  Text/Ảnh    │            │
+│   │  Text / Ảnh  │   │      │  Text / Ảnh  │            │
 │   └──────────────┘   │      └──────────────┘            │
 │                      │                                   │
 ├──────────────────────┴───────────────────────────────────┤
-│  CONTROL PANEL      [Layers] [Thuộc tính] [Kho ảnh]     │
-│  ───────────────────────────────────────────────────    │
-│  Nội dung tab đang active                                │
+│  CONTROL PANEL     [Layers] [Thuộc tính] [Kho ảnh]      │
 └──────────────────────────────────────────────────────────┘
 ```
 
-### Các khu vực chính
-
 | Khu vực | Chức năng |
-|---|---|
+|----------|----------|
 | **Header** | Undo/Redo, bật/tắt Mirror Mode, nút Export |
-| **Canvas Nam** (trái) | Vùng thiết kế áo Nam. Vùng in được đánh dấu bằng viền tím mờ |
-| **Canvas Nữ** (phải) | Vùng thiết kế áo Nữ. Có thể khác hoặc giống áo Nam (Mirror Mode) |
-| **Control Panel** (dưới) | Quản lý layer, chỉnh thuộc tính, kho ảnh, công cụ text |
+| **Canvas Nam** (trái) | Vùng thiết kế áo Nam. Vùng in 2:3 được đánh dấu viền tím. |
+| **Canvas Nữ** (phải) | Vùng thiết kế áo Nữ. Có thể khác hoặc giống Nam (Mirror). |
+| **Control Panel** | Quản lý layer, chỉnh thuộc tính, kho ảnh, chọn font. |
 
 ---
 
-## 3. Thao tác Cơ bản
+## 2. Upload Ảnh
 
-### 3.1 Chọn Đối tượng
+### Cách upload
 
-- **Click** vào text hoặc ảnh trên canvas để chọn
-- Đối tượng được chọn sẽ có viền xanh dương và các nút resize/xoay ở góc
-- **Click ra ngoài** để bỏ chọn
+1. Mở tab **Assets** (Kho ảnh) trong Control Panel
+2. Click nút **"📤 Upload ảnh mới"** hoặc kéo thả file vào vùng upload
+3. Chọn ảnh từ máy (PNG, JPEG, WebP — tối đa 10 MB)
+4. Ảnh sẽ được xử lý (resize, tạo thumbnail, xóa EXIF) và hiển thị trong kho ảnh
 
-### 3.2 Di chuyển
+### Đưa ảnh lên canvas
 
-- **Kéo thả** đối tượng đến vị trí mong muốn
-- Đối tượng sẽ tự động nằm trong vùng in (có snap guide)
+**Cách 1 — Kéo thả:**
+- Kéo ảnh từ Kho ảnh thả vào canvas Nam hoặc Nữ
+- Ảnh sẽ xuất hiện tại vị trí thả
 
-### 3.3 Resize (Thay đổi kích thước)
+**Cách 2 — Click:**
+- Click vào ảnh trong Kho ảnh để chọn
+- Ảnh sẽ được đặt vào giữa canvas đang active
 
-- **Kéo nút ở góc** để thay đổi kích thước
-- **Giữ Shift** khi kéo để giữ tỉ lệ (aspect ratio)
+### Chỉnh sửa ảnh trên canvas
 
-### 3.4 Xoay
+| Thao tác | Cách làm |
+|----------|----------|
+| Di chuyển | Click + kéo ảnh |
+| Resize | Kéo nút vuông ở góc (giữ Shift để giữ tỉ lệ) |
+| Xoay | Kéo nút tròn phía trên ảnh |
+| Xóa | Chọn ảnh → nhấn `Delete` |
+| Đổi opacity | Tab Properties → thanh trượt Opacity |
 
-- **Kéo nút xoay** (ở phía trên đối tượng khi được chọn) để xoay
-- **Giữ Shift** để xoay theo bước 15°
+### Định dạng được hỗ trợ
 
-### 3.5 Zoom/Pan
-
-- **Lăn chuột** để zoom in/out
-- **Kéo canvas nền** (không phải đối tượng) để di chuyển vùng nhìn (pan)
-- **Double-click canvas nền** để fit toàn bộ thiết kế
-
-### 3.6 Undo/Redo
-
-- **Nút Undo (↩)** trên header: quay lại thao tác trước (tối đa 50 bước)
-- **Nút Redo (↪)** trên header: làm lại thao tác đã undo
+| Định dạng | Trạng thái |
+|-----------|------------|
+| PNG | ✅ Hỗ trợ (nền trong suốt OK) |
+| JPEG | ✅ Hỗ trợ |
+| WebP | ✅ Hỗ trợ |
+| SVG | ❌ Không hỗ trợ (bảo mật) |
+| GIF | ❌ Không hỗ trợ |
 
 ---
 
-## 4. Thiết kế với Text
+## 3. Thêm & Chỉnh sửa Text
 
-### 4.1 Thêm Text
+### Thêm text mới
 
-1. Chọn tab **Text** trong Control Panel
-2. Nhập nội dung text vào ô "Nhập text..."
-3. Chọn font, kích thước, màu sắc
-4. Nhấn **"Thêm text"**
-5. Text sẽ xuất hiện trên canvas đang active
+1. Mở tab **Layers** trong Control Panel
+2. Click **"+ Add Text"**
+3. Một text layer mới xuất hiện trên canvas đang active
+4. Gõ nội dung trực tiếp trên canvas
 
-### 4.2 Chỉnh sửa Text
+### Chỉnh sửa text
 
-- **Double-click** vào text trên canvas để chỉnh sửa trực tiếp (in-place editing)
-- Con trỏ sẽ xuất hiện, bạn có thể gõ, xóa, chọn text như trong Word
-- **Nhấn Enter** hoặc click ra ngoài để kết thúc chỉnh sửa
-
-### 4.3 Định dạng Text
-
-Khi chọn text, tab **Thuộc tính** hiển thị:
+Chọn text layer trên canvas hoặc trong danh sách Layers, sau đó mở tab **Properties**:
 
 | Thuộc tính | Mô tả |
-|---|---|
-| **Font** | Danh sách font có sẵn (Inter, Montserrat, Pacifico...) |
-| **Kích thước** | 12–200px, có thể gõ số hoặc kéo thanh trượt |
-| **Màu chữ** | Color picker, chọn màu từ palette hoặc nhập mã hex |
-| **Căn lề** | Trái / Giữa / Phải |
-| **In đậm / Nghiêng** | Toggle Bold / Italic |
-| **Viền chữ (Stroke)** | Thêm đường viền quanh chữ, tùy chỉnh màu + độ dày |
-| **Độ trong suốt** | Opacity 0–100% |
+|------------|-------|
+| **Font** | Chọn từ danh sách font (Inter, Roboto, Playfair Display) |
+| **Size** | Kích thước chữ (px) |
+| **Color** | Màu chữ — click vào ô màu để chọn |
+| **Bold / Italic** | In đậm, in nghiêng |
+| **Align** | Căn trái / giữa / phải |
+| **Stroke** | Viền chữ (màu + độ dày) |
+| **Opacity** | Độ trong suốt (0-100%) |
 
-### 4.4 Font Có sẵn
+### Mẹo text
 
-| Font | Phong cách | Dùng cho |
-|---|---|---|
-| **Inter** | Sans-serif hiện đại | Text thông thường, thông điệp |
-| **Montserrat** | Sans-serif mạnh mẽ | Heading, slogan |
-| **Playfair Display** | Serif thanh lịch | Thiết kế cổ điển, cưới hỏi |
-| **Pacifico** | Handwriting mềm mại | Tên cặp đôi, text tình cảm |
-| **Bebas Neue** | Display đậm, cao | Số áo, text thể thao |
-| **Dancing Script** | Handwriting uyển chuyển | Thiết kệu vintage, cưới |
+- Double-click vào text trên canvas để chỉnh sửa nội dung trực tiếp
+- Dùng stroke (viền) để text nổi bật trên nền áo tối màu
+- Kết hợp Bold + Stroke cho text tiêu đề lớn
 
 ---
 
-## 5. Thiết kế với Ảnh
+## 4. Quản lý Layer
 
-### 5.1 Upload Ảnh
+### Danh sách layer
 
-1. Chọn tab **Kho ảnh** trong Control Panel
-2. Nhấn nút **"Upload ảnh"** (hoặc kéo thả file vào khu vực upload)
-3. Chọn file ảnh từ máy (hỗ trợ: PNG, JPEG, WebP, tối đa 10 MB)
-4. Ảnh sẽ được upload lên server, tự động resize và tạo thumbnail
-5. Ảnh xuất hiện trong kho ảnh sau khi upload hoàn tất
-
-### 5.2 Thêm Ảnh vào Canvas
-
-- **Kéo thả** ảnh từ kho ảnh vào canvas
-- Hoặc **click đúp** vào ảnh trong kho
-- Ảnh sẽ được thêm vào giữa canvas, sau đó bạn có thể di chuyển/resize
-
-### 5.3 Chỉnh sửa Ảnh
-
-Khi chọn ảnh, tab **Thuộc tính** hiển thị:
-
-| Thuộc tính | Mô tả |
-|---|---|
-| **Vị trí X, Y** | Tọa độ pixel trên canvas |
-| **Kích thước** | Width × Height |
-| **Xoay** | Góc xoay (0–360°) |
-| **Độ trong suốt** | Opacity 0–100% |
-| **Crop** | Cắt ảnh — kéo các cạnh để chọn vùng giữ lại |
-| **Filter** | Hiệu ứng: Grayscale, Sepia, Blur, Brightness, Contrast |
-
-### 5.4 Gợi ý Chất lượng Ảnh
-
-- Ảnh nên có độ phân giải ít nhất **1000×1000px** để đảm bảo chất lượng in
-- Ảnh PNG với nền trong suốt cho kết quả đẹp nhất
-- Tránh ảnh quá nhỏ (< 300px) — sẽ bị vỡ khi export
-- Dung lượng tối đa: 10 MB/file
-
----
-
-## 6. Quản lý Layer
-
-### 6.1 Layer là gì?
-
-Mỗi text và ảnh trên canvas là một **layer** riêng biệt. Layer ở trên cùng sẽ đè lên layer ở dưới. Bạn có thể sắp xếp thứ tự layer để tạo hiệu ứng chồng lớp.
-
-### 6.2 Bảng Layer
-
-Chọn tab **Layers** trong Control Panel để xem danh sách layer:
+Mở tab **Layers** để xem tất cả layer trên canvas đang active:
 
 ```
-┌──────────────────────────────────────┐
-│ Layers                     [Mirror] │
-├──────────────────────────────────────┤
-│ 👁 🔓 T  "Forever Together"  ≡  🗑  │
-│ 👁 🔒 🖼  tim.png             ≡  🗑  │
-│ 👁 🔓 T  "2026"              ≡  🗑  │
-├──────────────────────────────────────┤
-│ [+ Thêm Text] [+ Thêm Ảnh]          │
-└──────────────────────────────────────┘
+👁  🔓  [T]  "Forever Together"     ≡  🗑    ← Text layer
+👁  🔒  [🖼]  flower-pattern.png     ≡  🗑    ← Ảnh layer
+👁  🔓  [T]  "Est. 2026"            ≡  🗑    ← Text layer
 ```
 
-| Biểu tượng | Chức năng |
-|---|---|
-| 👁 / 👁‍🗨 | Hiện/ẩn layer (visibility toggle) |
-| 🔒 / 🔓 | Khóa/Mở khóa layer (không thể chọn/di chuyển) |
-| **T** / 🖼 | Loại layer: Text hoặc Image |
-| Tên | Click để chọn layer → hiện thuộc tính |
+### Thao tác với layer
+
+| Icon | Chức năng |
+|------|-----------|
+| 👁 / 👁‍🗨 | Ẩn / Hiện layer |
+| 🔒 / 🔓 | Khóa / Mở khóa layer (khóa = không di chuyển được) |
+| T / 🖼 | Loại layer (Text / Ảnh) |
 | ≡ | Kéo để sắp xếp lại thứ tự layer |
 | 🗑 | Xóa layer |
 
-### 6.3 Thao tác Layer
+### Thứ tự layer
 
-- **Kéo thả** layer lên/xuống trong danh sách để thay đổi z-index
-- **Click vào tên layer** để chọn layer đó trên canvas
-- **Ẩn layer** (👁) nếu muốn tạm thời không nhìn thấy nhưng không xóa
-- **Khóa layer** (🔒) để tránh vô tình di chuyển
-
----
-
-## 7. Chế độ Mirror
-
-### 7.1 Mirror Mode là gì?
-
-Mirror Mode tự động sao chép thiết kế từ áo Nam sang áo Nữ (hoặc ngược lại). Thay đổi trên một bên sẽ tự động áp dụng cho bên kia.
-
-### 7.2 Cách sử dụng
-
-1. Nhấn nút **Mirror** (🔄) trên Header để bật
-2. Nút sẽ chuyển màu vàng — Mirror Mode đang hoạt động
-3. Thiết kế trên canvas đang active sẽ được đồng bộ sang canvas còn lại
-4. Mọi thay đổi (thêm, sửa, xóa, di chuyển) đều được mirror
-
-### 7.3 Khi nào nên dùng Mirror
-
-- **Thiết kế giống nhau cho cả Nam và Nữ** — bật Mirror, thiết kế một lần
-- **Thiết kế mỗi bên khác nhau** — tắt Mirror (nút màu xám), thiết kế riêng từng bên
-- **Thiết kế nền giống, text khác** — bật Mirror để thêm ảnh nền, sau đó tắt Mirror để chỉnh text riêng
+- Layer trên cùng trong danh sách = nằm trên cùng trên canvas
+- Kéo thả layer trong danh sách để thay đổi z-order
+- Layer bị che có thể ẩn layer phía trên để chỉnh sửa
 
 ---
 
-## 8. Xuất File (Export)
+## 5. Chế độ Mirror
 
-### 8.1 Các bước Export
+Chế độ Mirror (**🔄**) đồng bộ thiết kế giữa canvas Nam và Nữ.
 
-1. Nhấn nút **"Export"** (📥) trên Header
+### Bật/Tắt
+
+- Click nút **Mirror 🔄** trên Header để bật/tắt
+- Khi **ON**: mọi thay đổi trên canvas Nam sẽ tự động copy sang canvas Nữ
+- Khi **OFF**: hai canvas hoạt động độc lập
+
+### Khi nào dùng Mirror?
+
+| Tình huống | Mirror |
+|------------|--------|
+| Thiết kế giống hệt cho cả Nam và Nữ | **ON** |
+| Chỉnh vị trí khác nhau cho Nam/Nữ | ON trước → OFF → chỉnh riêng |
+| Thiết kế hoàn toàn khác nhau | **OFF** |
+
+---
+
+## 6. Xuất File (Export)
+
+### Các bước export
+
+1. Click nút **⬇ Export** trên Header
 2. Chọn định dạng:
-   - **PNG** — Ảnh chất lượng cao (2400×3600px, ~300 DPI cho áo ~20×30cm)
-   - **PDF** — File PDF sẵn sàng in
-   - **Cả hai** — Xuất cả PNG và PDF
+   - **PNG** — 2400×3600px, ~300 DPI (in ấn)
+   - **PDF** — Vector text, print-ready (đang phát triển)
 3. Chọn chất lượng:
-   - **Draft** — Nhanh, file nhỏ (xem trước)
-   - **Standard** — Cân bằng chất lượng/dung lượng
-   - **High** — Chất lượng cao nhất (khuyên dùng cho in ấn)
-4. Nhấn **"Bắt đầu Export"**
-5. Đợi server xử lý (thường 5–15 giây)
-6. Khi hoàn tất, link download sẽ hiện ra — **tải về ngay**
+   - **Draft** — nhanh, xem trước
+   - **Standard** — cân bằng tốc độ/chất lượng
+   - **High** — in ấn chuyên nghiệp
+4. Click **Export** để bắt đầu
+5. Đợi thanh tiến trình hoàn tất
+6. Click **Download PNG** để tải file về máy
 
-### 8.2 Lưu ý quan trọng
+### Lưu ý quan trọng
 
-⚠️ **File export chỉ được lưu trên server trong 1 giờ.** Sau 1 giờ, file sẽ tự động bị xóa. Hãy tải về ngay sau khi export hoàn tất.
-
-⚠️ **Export IDEMPOTENT**: Nếu bạn nhấn Export nhiều lần với cùng một thiết kế, server sẽ trả về kết quả cũ (không tạo file mới). Để export lại sau khi chỉnh sửa, hãy thay đổi thiết kế trước.
-
-### 8.3 Kích thước Export
-
-| Định dạng | Kích thước | DPI tương đương (áo ~20×30cm) |
-|---|---|---|
-| PNG | 2400 × 3600 px | ~300 DPI |
-| PDF | A4 portrait | Vector text + ảnh 300 DPI |
+- ⏱️ File export được lưu trên server trong **1 giờ**. Hãy tải về ngay.
+- 🔄 Export là **idempotent** — nếu export lại cùng thiết kế, server trả về file đã có (nhanh hơn).
+- 📐 Kích thước export cố định 2400×3600px (tỉ lệ 2:3).
 
 ---
 
-## 9. Phím tắt
+## 7. Phím tắt & Touch Gestures
+
+### Phím tắt (Desktop)
 
 | Phím tắt | Hành động |
-|---|---|
+|----------|-----------|
 | `Ctrl/Cmd + Z` | Undo |
 | `Ctrl/Cmd + Shift + Z` | Redo |
-| `Ctrl/Cmd + C` | Copy layer đang chọn |
-| `Ctrl/Cmd + V` | Paste layer |
 | `Delete / Backspace` | Xóa layer đang chọn |
-| `Ctrl/Cmd + D` | Bỏ chọn (deselect) |
 | `Ctrl/Cmd + A` | Chọn tất cả layer |
-| `Ctrl/Cmd + G` | Group các layer đang chọn |
-| `Ctrl/Cmd + Shift + G` | Ungroup |
-| `↑ ↓ ← →` | Di chuyển layer 1px |
-| `Shift + ↑ ↓ ← →` | Di chuyển layer 10px |
 | `Ctrl/Cmd + M` | Bật/tắt Mirror Mode |
 | `Ctrl/Cmd + E` | Mở hộp thoại Export |
-| `+ / -` | Zoom in / out |
-| `0` | Fit toàn bộ canvas |
+| `+ / -` | Zoom in/out |
+| `0` | Fit canvas (xem toàn bộ) |
+| `Phím mũi tên` | Di chuyển layer 1px |
+| `Shift + Mũi tên` | Di chuyển layer 10px |
+| `Escape` | Bỏ chọn tất cả |
+
+### Touch Gestures (Mobile/Tablet)
+
+| Gesture | Hành động |
+|---------|-----------|
+| **1 ngón chạm** | Chọn layer |
+| **1 ngón kéo** | Di chuyển layer |
+| **2 ngón pinch** | Zoom in/out canvas |
+| **2 ngón pan** | Di chuyển viewport canvas |
+| **Double tap** | Fit canvas (xem toàn bộ) |
+| **Chạm giữ** | Mở context menu (Cut/Copy/Paste/Delete) |
+
+### Mobile Layout
+
+Trên màn hình nhỏ (< 768px):
+- Canvas Nam và Nữ xếp **dọc** (Nam trên, Nữ dưới)
+- Control Panel hiển thị dạng **bottom sheet** — kéo từ dưới lên
+- Touch targets tối thiểu 44×44px
 
 ---
 
-## 10. Mẹo và Thủ thuật
+## 8. Mẹo thiết kế
 
-### 10.1 Thiết kế Đẹp hơn
+### Text rõ nét khi in
 
-- **Dùng Mirror Mode** để đảm bảo thiết kế đồng nhất giữa áo Nam và Nữ
-- **Group các layer liên quan** (Ctrl+G) để di chuyển/resize cùng lúc
-- **Thêm viền (stroke) cho text** nếu chữ bị chìm trên nền áo tối màu
-- **Dùng font phù hợp**: Sans-serif cho thông điệp hiện đại, Script cho tên cặp đôi
-- **Chừa khoảng trống (bleed)** — không đặt text/ảnh sát mép vùng in
+- ✅ Font size tối thiểu **16px** cho text chính
+- ✅ Dùng stroke (viền) cho text trên nền tối
+- ✅ Chọn font sans-serif (Inter, Roboto) cho text nhỏ
+- ❌ Tránh text quá nhỏ (< 12px) — sẽ không đọc được khi in
 
-### 10.2 Tối ưu cho In ấn
+### Ảnh sắc nét
 
-- **Luôn export ở chất lượng "High"** khi chuẩn bị file in
-- **Kiểm tra vùng in** (viền tím) — mọi thứ ngoài vùng này sẽ không được in
-- **Text nên ≥ 24px** để đảm bảo đọc được trên áo thật
-- **Ảnh nên có nền trong suốt (PNG)** để hòa trộn đẹp với màu áo
+- ✅ Upload ảnh có độ phân giải cao (≥ 800px cạnh ngắn)
+- ✅ Dùng PNG nền trong suốt cho logo, sticker
+- ❌ Tránh ảnh JPEG chất lượng thấp (< 500px) — sẽ bị vỡ khi in
 
-### 10.3 Làm việc trên Mobile
+### Bố cục
 
-- Layout tự động chuyển sang **xếp dọc** trên màn hình nhỏ
-- Sử dụng **tab** ở dưới để chuyển giữa canvas Nam và Nữ
-- Kéo 2 ngón tay để **pinch-to-zoom**
-- Kéo 1 ngón tay trên canvas nền để **pan**
+- Vùng in là **2:3** (200×300mm) — thiết kế trong vùng viền tím
+- Đặt text/ảnh chính ở giữa vùng in
+- Chừa lề ≥ 10mm mỗi cạnh để tránh bị cắt khi in
 
 ---
 
-## 11. Yêu cầu Hệ thống
+## Yêu cầu Hệ thống
 
-### Trình duyệt hỗ trợ
-
-| Trình duyệt | Phiên bản tối thiểu |
-|---|---|
-| Chrome | 64+ |
-| Firefox | 58+ |
-| Safari | 11+ |
-| Edge | Chromium-based |
-
-### Mobile
-
-- **iOS**: Safari 11+, Chrome
-- **Android**: Chrome 64+, Firefox 58+
-
-### Kết nối
-
-- Cần kết nối Internet để upload ảnh và export
-- Canvas editing hoạt động offline sau khi load
+| Thành phần | Yêu cầu |
+|------------|---------|
+| **Trình duyệt** | Chrome 90+, Firefox 90+, Safari 15+, Edge 90+ |
+| **Hệ điều hành** | Windows 10+, macOS 11+, iOS 15+, Android 11+ |
+| **Màn hình** | Tối thiểu 360px rộng (mobile), khuyến nghị 1280px+ (desktop) |
+| **Internet** | Cần kết nối để upload ảnh và export |
 
 ---
 
-## Cần trợ giúp?
-
-- 📧 Email: [contact@dualcanvas.app]
-- 🐛 Báo lỗi: [GitHub Issues](https://github.com/your-org/dual-canvas-editor/issues)
-- 📖 Tài liệu kỹ thuật: [Developer Guide](DEVELOPER_GUIDE.md)
-
----
-
-**Phiên bản**: 0.1.0 (MVP)
-**Cập nhật lần cuối**: 2026-07-02
+**Cần hỗ trợ?** Xem thêm [SETUP.md](SETUP.md) cho hướng dẫn cài đặt môi trường dev.

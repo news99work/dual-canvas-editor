@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { requestExport, getExportStatus } from '../../api/export';
-import { useCanvasState, type CanvasLayer } from '../../hooks/useCanvasState';
+import { triggerExport, waitForExport } from '../../api/export';
+import { useCanvasState } from '../../hooks/useCanvasState';
 
 export default function ExportButton() {
   const [status, setStatus] = useState<'idle' | 'processing' | 'done' | 'error'>('idle');
@@ -15,66 +15,73 @@ export default function ExportButton() {
     setError('');
     try {
       const canvasState = {
-        namCanvas: serializeLayers(namLayers),
-        nuCanvas: serializeLayers(nuLayers),
+        version: 1,
         garmentColor,
-        format: 'png' as const,
-        quality: 'high' as const,
+        viewMode: 'front',
+        canvasWidth: 400,
+        canvasHeight: 500,
+        designs: {
+          nam: { layers: namLayers },
+          nu: { layers: nuLayers },
+        },
       };
-      const job = await requestExport(canvasState);
-      const jobId = job.id || job.jobId;
-      if (!jobId) throw new Error('No job ID');
-
-      let attempts = 0;
-      while (attempts < 30) {
-        await new Promise((r) => setTimeout(r, 1000));
-        const result = await getExportStatus(jobId);
-        if (result.status === 'done' || result.status === 'completed') {
-          setDownloadUrl(result.downloadUrl || result.url || '');
-          setStatus('done');
-          return;
-        }
-        if (result.status === 'failed') throw new Error('Export failed');
-        attempts++;
-      }
-      throw new Error('Export timeout');
+      const { jobId } = await triggerExport(canvasState as any);
+      const result = await waitForExport(jobId, 15, 2000);
+      setDownloadUrl(result.downloadUrl || result.url || '');
+      setStatus('done');
     } catch (err: any) {
-      setError(err?.message || 'Export error');
       setStatus('error');
+      setError(err?.message || 'Export failed');
     }
   };
 
   return (
     <div>
-      <h4 style={{ margin: '0 0 8px', fontSize: 14 }}>Xuất file thiết kế</h4>
-      <button onClick={handleExport} disabled={status === 'processing'}
-        style={{ width: '100%', padding: 12, borderRadius: 8, border: 'none', fontWeight: 600, cursor: status === 'processing' ? 'not-allowed' : 'pointer', fontSize: 14, background: status === 'done' ? '#16a34a' : status === 'error' ? '#ef4444' : '#2563eb', color: '#fff', opacity: status === 'processing' ? 0.7 : 1 }}>
-        {status === 'idle' && '📥 Xuất file PNG'}
-        {status === 'processing' && '⏳ Đang xử lý...'}
-        {status === 'done' && '✅ Tải xuống'}
-        {status === 'error' && '🔄 Thử lại'}
-      </button>
-      {status === 'done' && downloadUrl && (
-        <a href={downloadUrl} download style={{ display: 'block', marginTop: 8, textAlign: 'center', color: '#2563eb', fontSize: 13 }}>
-          Nhấn vào đây nếu không tự tải
-        </a>
+      <h4 style={{ margin: '0 0 8px', fontSize: 14 }}>Xuất file in</h4>
+
+      {status === 'idle' && (
+        <button onClick={handleExport}
+          style={{ width: '100%', padding: 14, borderRadius: 8, background: '#059669', color: '#fff', border: 'none', fontWeight: 700, cursor: 'pointer', fontSize: 16 }}>
+          📥 Xuất file PNG
+        </button>
       )}
-      {error && <p style={{ color: '#ef4444', fontSize: 12, marginTop: 4 }}>{error}</p>}
+
+      {status === 'processing' && (
+        <div style={{ textAlign: 'center', padding: 20 }}>
+          <div style={{ fontSize: 32, marginBottom: 8 }}>⏳</div>
+          <p style={{ color: '#6b7280' }}>Đang xử lý file in...</p>
+          <div style={{ height: 4, background: '#e5e7eb', borderRadius: 2, overflow: 'hidden', marginTop: 8 }}>
+            <div style={{ width: '60%', height: '100%', background: '#2563eb', borderRadius: 2, animation: 'pulse 1.5s infinite' }} />
+          </div>
+        </div>
+      )}
+
+      {status === 'done' && (
+        <div style={{ textAlign: 'center', padding: 16, background: '#f0fdf4', borderRadius: 8 }}>
+          <div style={{ fontSize: 32 }}>✅</div>
+          <p style={{ color: '#166534', fontWeight: 600, margin: '8px 0' }}>Xuất file thành công!</p>
+          {downloadUrl && (
+            <a href={downloadUrl} download
+              style={{ display: 'inline-block', padding: '10px 24px', background: '#2563eb', color: '#fff', borderRadius: 8, textDecoration: 'none', fontWeight: 600 }}>
+              📥 Tải file PNG
+            </a>
+          )}
+          <button onClick={() => setStatus('idle')}
+            style={{ display: 'block', margin: '8px auto 0', background: 'none', border: 'none', color: '#2563eb', cursor: 'pointer', fontSize: 13 }}>
+            Xuất lại
+          </button>
+        </div>
+      )}
+
+      {status === 'error' && (
+        <div style={{ textAlign: 'center', padding: 16, background: '#fef2f2', borderRadius: 8 }}>
+          <p style={{ color: '#ef4444', margin: '0 0 8px' }}>❌ {error || 'Lỗi xuất file'}</p>
+          <button onClick={() => setStatus('idle')}
+            style={{ padding: '8px 20px', borderRadius: 6, background: '#2563eb', color: '#fff', border: 'none', cursor: 'pointer' }}>
+            Thử lại
+          </button>
+        </div>
+      )}
     </div>
   );
-}
-
-function serializeLayers(layers: CanvasLayer[]) {
-  return layers.map((l) => ({
-    id: l.id,
-    type: l.type,
-    x: l.x, y: l.y,
-    width: l.width, height: l.height,
-    rotation: l.rotation,
-    text: l.text,
-    fontSize: l.fontSize,
-    fontFamily: l.fontFamily,
-    fill: l.fill,
-    imageUrl: l.imageUrl,
-  }));
 }

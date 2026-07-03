@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { uploadImage } from '../../api/upload';
+import { uploadAsset } from '../../api/upload';
 import { useCanvasState, createImageLayer } from '../../hooks/useCanvasState';
 
 export default function ImageUploader() {
@@ -14,8 +14,8 @@ export default function ImageUploader() {
     setUploading(true);
     setError('');
     try {
-      const result = await uploadImage(file);
-      addImageLayer(activeSide, createImageLayer(result.url || URL.createObjectURL(file)));
+      const result = await uploadAsset({ file });
+      addImageLayer(activeSide, createImageLayer(result.url));
     } catch (err: any) {
       setError(err?.message || 'Upload failed');
     } finally {

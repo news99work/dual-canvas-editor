@@ -36,7 +36,8 @@ export function validate(schemas: ValidationSchemas) {
             messages,
           );
         }
-        req.query = result.data as any;
+        // Express 5: req.query is a getter — mutate the object, don't reassign
+        Object.assign(req.query, result.data);
       }
 
       if (schemas.params) {
@@ -50,7 +51,8 @@ export function validate(schemas: ValidationSchemas) {
             messages,
           );
         }
-        req.params = result.data as any;
+        // Express 5: req.params is a getter — mutate the object, don't reassign
+        Object.assign(req.params, result.data);
       }
 
       next();

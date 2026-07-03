@@ -143,7 +143,7 @@ async function processJob(
       side: 'nam' | 'nu',
       canvas: CanvasDescriptorData,
     ): Promise<void> => {
-      const composites: OverlayOptions[] = [];
+      const composites: Array<Record<string, any>> = [];
 
       // Background color
       if (canvas.backgroundColor) {
