@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import DualCanvas from './components/Canvas/DualCanvas';
+import { useCanvasState, createTextLayer } from './hooks/useCanvasState';
 import './App.css';
 
 type RightTab = 'product' | 'text' | 'upload' | 'layer';
@@ -80,7 +81,6 @@ function App() {
 // ====== Right Panel Sections ======
 
 function ProductPanel() {
-  const { useCanvasState } = require('./hooks/useCanvasState');
   const garmentColor = useCanvasState((s: any) => s.garmentColor);
   const setGarmentColor = useCanvasState((s: any) => s.setGarmentColor);
   const [printPos, setPrintPos] = useState('front');
@@ -161,7 +161,6 @@ function ProductPanel() {
 
 function TextPanel() {
   const [text, setText] = useState('');
-  const { useCanvasState, createTextLayer } = require('./hooks/useCanvasState');
   const activeSide = useCanvasState((s: any) => s.activeSide);
   const addTextLayer = useCanvasState((s: any) => s.addTextLayer);
 
@@ -199,7 +198,6 @@ function UploadPanel() {
 }
 
 function LayerPanel() {
-  const { useCanvasState } = require('./hooks/useCanvasState');
   const layers = useCanvasState((s: any) => s.namLayers);
   const deleteLayer = useCanvasState((s: any) => s.deleteLayer);
   const activeSide = useCanvasState((s: any) => s.activeSide);
