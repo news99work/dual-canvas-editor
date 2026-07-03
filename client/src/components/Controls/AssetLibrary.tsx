@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { listAssets } from '../../api/assets';
+import type { AssetCategory } from '../../api/types';
 import { useCanvasState, createImageLayer } from '../../hooks/useCanvasState';
 
 type Category = 'all' | 'love' | 'chibi' | 'slogan' | 'tet';
@@ -28,7 +29,7 @@ export default function AssetLibrary() {
 
   useEffect(() => {
     setLoading(true);
-    listAssets(category === 'all' ? undefined : { category })
+    listAssets(category === 'all' ? undefined : { category: category as unknown as AssetCategory })
       .then((res: any) => setAssets(res.assets || []))
       .catch(() => setAssets([]))
       .finally(() => setLoading(false));

@@ -25,9 +25,9 @@ export default function ExportButton() {
           nu: { layers: nuLayers },
         },
       };
-      const { jobId } = await triggerExport(canvasState as any);
-      const result = await waitForExport(jobId, 15, 2000);
-      setDownloadUrl(result.downloadUrl || result.url || '');
+      const { id: jobId } = await triggerExport(canvasState as any);
+      const result = await waitForExport(jobId, { interval: 2000, maxRetries: 15 });
+      setDownloadUrl(result.outputs?.[0]?.url || '');
       setStatus('done');
     } catch (err: any) {
       setStatus('error');

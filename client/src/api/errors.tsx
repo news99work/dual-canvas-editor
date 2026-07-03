@@ -1,6 +1,7 @@
 // ── Dual Canvas Editor — Error Handling UI Components ──
 // Reusable loading, empty, and error state components for API-driven views.
 
+import React from 'react';
 import { ApiError } from './client';
 
 // ── Error Display ──
@@ -16,7 +17,7 @@ export interface ErrorDisplayProps {
  * If onRetry is provided, shows a retry button.
  * Returns null when error is null.
  */
-export function ErrorDisplay({ error, onRetry, title }: ErrorDisplayProps): JSX.Element | null {
+export function ErrorDisplay({ error, onRetry, title }: ErrorDisplayProps): React.JSX.Element | null {
   if (!error) return null;
 
   const isApiError = error instanceof ApiError;
@@ -56,7 +57,7 @@ export interface LoadingSpinnerProps {
 /**
  * Simple loading spinner with optional text label.
  */
-export function LoadingSpinner({ size = 'medium', label }: LoadingSpinnerProps): JSX.Element {
+export function LoadingSpinner({ size = 'medium', label }: LoadingSpinnerProps): React.JSX.Element {
   return (
     <div className={`loading-spinner loading-spinner--${size}`} role="status">
       <div className="loading-spinner__circle" />
@@ -85,7 +86,7 @@ export function EmptyState({
   title,
   description,
   action,
-}: EmptyStateProps): JSX.Element {
+}: EmptyStateProps): React.JSX.Element {
   return (
     <div className="empty-state">
       <div className="empty-state__icon">{icon}</div>
@@ -120,7 +121,7 @@ export function UploadProgress({
   status = 'uploading',
   errorMessage,
   onCancel,
-}: UploadProgressProps): JSX.Element {
+}: UploadProgressProps): React.JSX.Element {
   const isComplete = status === 'done';
   const hasError = status === 'error';
 
@@ -168,7 +169,7 @@ export interface ExportProgressProps {
 /**
  * Shows export job progress with status mapping.
  */
-export function ExportProgress({ job }: ExportProgressProps): JSX.Element {
+export function ExportProgress({ job }: ExportProgressProps): React.JSX.Element {
   if (!job) {
     return <div className="export-progress export-progress--idle">No active export</div>;
   }

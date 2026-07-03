@@ -1,5 +1,5 @@
-import { useEffect, useRef, useCallback } from 'react';
-import { fabric } from 'fabric';
+import { useEffect, useRef } from 'react';
+import { Canvas, Rect, Text, FabricImage } from 'fabric';
 import { useCanvasState, type CanvasSide, type CanvasLayer } from '../../hooks/useCanvasState';
 
 interface EditorCanvasProps {
@@ -10,7 +10,7 @@ interface EditorCanvasProps {
 }
 
 const PRINT_COLORS: Record<string, string> = {
-  '#FFFFFF': '#fff',
+  '#FFFFFF': '#f0f0f0',
   '#000000': '#222',
   '#FF0000': '#d00',
   '#0000FF': '#25d',
@@ -23,7 +23,7 @@ const PRINT_COLORS: Record<string, string> = {
 
 export default function EditorCanvas({ side, width, height, printArea }: EditorCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const fabricRef = useRef<fabric.Canvas | null>(null);
+  const fcRef = useRef<Canvas | null>(null);
   const layers = useCanvasState((s) => (side === 'nam' ? s.namLayers : s.nuLayers));
   const garmentColor = useCanvasState((s) => s.garmentColor);
   const activeSide = useCanvasState((s) => s.activeSide);
@@ -33,11 +33,11 @@ export default function EditorCanvas({ side, width, height, printArea }: EditorC
 
   const colorHex = PRINT_COLORS[garmentColor] || garmentColor;
 
-  // Init canvas
   useEffect(() => {
-    if (!canvasRef.current || fabricRef.current) return;
+    if (!canvasRef.current || fcRef.current) return;
+    const el = canvasRef.current;
 
-    const fc = new fabric.Canvas(canvasRef.current, {
+    const fc = new Canvas(el, {
       width,
       height,
       backgroundColor: '#f5f5f5',
@@ -45,8 +45,7 @@ export default function EditorCanvas({ side, width, height, printArea }: EditorC
       preserveObjectStacking: true,
     });
 
-    // Draw print area guide
-    const guide = new fabric.Rect({
+    const guide = new Rect({
       left: printArea.x,
       top: printArea.y,
       width: printArea.w,
@@ -57,21 +56,17 @@ export default function EditorCanvas({ side, width, height, printArea }: EditorC
       strokeDashArray: [6, 4],
       selectable: false,
       evented: false,
-      excludeFromExport: true,
     });
     fc.add(guide);
-    fc.sendToBack(guide);
+    fc.sendObjectToBack(guide);
     (fc as any).__printGuide = guide;
 
-    fc.on('mouse:down', () => {
-      setActiveSide(side);
-    });
-
+    fc.on('mouse:down', () => setActiveSide(side));
     fc.on('selection:created', (e: any) => {
-      if (e.selected?.[0]) setActiveLayer((e.selected[0] as any).__layerId || null);
+      if (e.selected?.[0]) setActiveLayer(e.selected[0].__layerId || null);
     });
     fc.on('selection:updated', (e: any) => {
-      if (e.selected?.[0]) setActiveLayer((e.selected[0] as any).__layerId || null);
+      if (e.selected?.[0]) setActiveLayer(e.selected[0].__layerId || null);
     });
     fc.on('selection:cleared', () => setActiveLayer(null));
 
@@ -100,107 +95,63 @@ export default function EditorCanvas({ side, width, height, printArea }: EditorC
       syncLayer(side, layer);
     });
 
-    fabricRef.current = fc;
-
-    return () => {
-      fc.dispose();
-      fabricRef.current = null;
-    };
+    fcRef.current = fc;
+    return () => { fc.dispose(); fcRef.current = null; };
   }, []);
 
-  // Update garment color
   useEffect(() => {
-    const fc = fabricRef.current;
+    const fc = fcRef.current;
     if (!fc) return;
-    const guide = (fc as any).__printGuide as fabric.Rect;
+    const guide = (fc as any).__printGuide as Rect;
     if (guide) guide.set('fill', colorHex);
     fc.requestRenderAll();
   }, [garmentColor, colorHex]);
 
-  // Sync layers from store to canvas
-  const layerMapRef = useRef<Map<string, fabric.Object>>(new Map());
+  const layerMapRef = useRef<Map<string, any>>(new Map());
 
   useEffect(() => {
-    const fc = fabricRef.current;
+    const fc = fcRef.current;
     if (!fc) return;
-
     const currentIds = new Set(layers.map((l) => l.id));
     const existingMap = layerMapRef.current;
 
-    // Remove deleted layers
     for (const [id, obj] of existingMap) {
-      if (!currentIds.has(id)) {
-        fc.remove(obj);
-        existingMap.delete(id);
-      }
+      if (!currentIds.has(id)) { fc.remove(obj); existingMap.delete(id); }
     }
 
-    // Add/update layers
     layers.forEach((layer) => {
       const existing = existingMap.get(layer.id);
+      const isInside = layer.x >= printArea.x && layer.y >= printArea.y &&
+        (layer.x + layer.width) <= (printArea.x + printArea.w) &&
+        (layer.y + layer.height) <= (printArea.y + printArea.h);
+      const lx = isInside ? layer.x : printArea.x + 20;
+      const ly = isInside ? layer.y : printArea.y + 20;
+
       if (existing) {
-        existing.set({
-          left: layer.x,
-          top: layer.y,
-          width: layer.width,
-          height: layer.height,
-          angle: layer.rotation,
-          scaleX: layer.scaleX,
-          scaleY: layer.scaleY,
-        });
+        existing.set({ left: layer.x, top: layer.y, width: layer.width, height: layer.height, angle: layer.rotation, scaleX: layer.scaleX, scaleY: layer.scaleY });
         if (layer.type === 'text' && existing.type === 'text') {
-          (existing as fabric.Text).set({
-            text: layer.text,
-            fontSize: layer.fontSize,
-            fontFamily: layer.fontFamily,
-            fill: layer.fill,
-          });
+          existing.set({ text: layer.text, fontSize: layer.fontSize, fontFamily: layer.fontFamily, fill: layer.fill });
         }
         existing.setCoords();
-      } else {
-        const rect = new fabric.Rect({
-          left: 0,
-          top: 0,
-          width: printArea.w,
-          height: printArea.h,
-          selectable: false,
-          evented: false,
+      } else if (layer.type === 'image' && layer.imageUrl) {
+        FabricImage.fromURL(layer.imageUrl, { crossOrigin: 'anonymous' }).then((img) => {
+          img.set({ left: lx, top: ly, scaleX: layer.width / (img.width || 150), scaleY: layer.height / (img.height || 150), angle: layer.rotation });
+          (img as any).__layerId = layer.id;
+          (img as any).__layerType = 'image';
+          (img as any).__imageUrl = layer.imageUrl;
+          img.setControlsVisibility({ mtr: true });
+          fc.add(img);
+          existingMap.set(layer.id, img);
+          fc.requestRenderAll();
         });
-        const isInside = layer.x >= printArea.x &&
-          layer.y >= printArea.y &&
-          (layer.x + layer.width) <= (printArea.x + printArea.w) &&
-          (layer.y + layer.height) <= (printArea.y + printArea.h);
-
-        let obj: fabric.Object;
-        if (layer.type === 'image' && layer.imageUrl) {
-          fabric.Image.fromURL(layer.imageUrl, (img) => {
-            img.set({
-              left: isInside ? layer.x : printArea.x + 20,
-              top: isInside ? layer.y : printArea.y + 20,
-              scaleX: layer.width / (img.width || 150),
-              scaleY: layer.height / (img.height || 150),
-              angle: layer.rotation,
-            });
-            (img as any).__layerId = layer.id;
-            (img as any).__layerType = 'image';
-            (img as any).__imageUrl = layer.imageUrl;
-            img.setControlsVisibility({ mtr: true });
-            fc.add(img);
-            existingMap.set(layer.id, img);
-            fc.requestRenderAll();
-          }, { crossOrigin: 'anonymous' });
-          return;
-        } else {
-          obj = new fabric.Text(layer.text || '', {
-            left: isInside ? layer.x : printArea.x + 20,
-            top: isInside ? layer.y : printArea.y + 20,
-            fontSize: layer.fontSize || 24,
-            fontFamily: layer.fontFamily || 'Arial',
-            fill: layer.fill || '#000',
-            angle: layer.rotation,
-          });
-        }
-
+      } else {
+        const obj = new Text(layer.text || '', {
+          left: lx, top: ly,
+          fontSize: layer.fontSize || 24,
+          fontFamily: layer.fontFamily || 'Arial',
+          fill: layer.fill || '#000',
+          angle: layer.rotation,
+        });
         (obj as any).__layerId = layer.id;
         (obj as any).__layerType = layer.type;
         obj.setControlsVisibility({ mtr: true });
@@ -213,13 +164,10 @@ export default function EditorCanvas({ side, width, height, printArea }: EditorC
   }, [layers, printArea]);
 
   const isActive = activeSide === side;
-
   return (
-    <div
-      className={`editor-canvas ${isActive ? 'editor-canvas--active' : ''}`}
+    <div className={`editor-canvas ${isActive ? 'editor-canvas--active' : ''}`}
       onClick={() => setActiveSide(side)}
-      style={{ border: isActive ? '3px solid #2563eb' : '3px solid #e5e7eb', borderRadius: 8, overflow: 'hidden' }}
-    >
+      style={{ border: isActive ? '3px solid #2563eb' : '3px solid #e5e7eb', borderRadius: 8, overflow: 'hidden' }}>
       <div style={{ padding: '4px 12px', background: isActive ? '#2563eb' : '#9ca3af', color: '#fff', fontSize: 14, fontWeight: 600, textAlign: 'center' }}>
         {side === 'nam' ? '👕 Áo Nam' : '👚 Áo Nữ'}
       </div>

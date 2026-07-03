@@ -1,71 +1,74 @@
 # Dual Canvas Editor
 
-> **Nền tảng thiết kế áo thun đôi (Nam/Nữ) — MVP**
+> **Nền tảng thiết kế áo thun đôi (Nam/Nữ) — MVP v0.1.0**
 
-Dual Canvas Editor là ứng dụng web cho phép thiết kế hình in lên áo thun với hai canvas song song (Nam/Nữ). Upload ảnh, thêm text, tùy chỉnh màu sắc, xuất file in chất lượng cao.
-
-**Trạng thái:** ✅ MVP Backend hoàn thành — 44 tests pass. Frontend canvas (Fabric.js) đang tích hợp.
+Dual Canvas Editor là ứng dụng web cho phép thiết kế hình in lên hai mẫu áo Nam và Nữ đồng thời. Upload ảnh, thêm text, tùy chỉnh layer, và xuất file in chất lượng cao (PNG/PDF).
 
 ---
 
 ## Tính năng
 
-| Tính năng | Mô tả |
-|-----------|-------|
-| 🎨 **Dual Canvas** | Thiết kế đồng thời trên canvas Nam và Nữ, chế độ Mirror đồng bộ |
-| 🖼️ **Upload Ảnh** | Upload PNG/JPEG/WebP, tự động resize + thumbnail (Sharp) |
-| ✏️ **Text Editor** | Thêm text với font, màu, kích thước tùy chỉnh (Fabric.js IText) |
-| 📦 **Asset Library** | Thư viện ảnh đã upload, lọc theo danh mục, tìm kiếm, phân trang |
-| 📤 **Export** | Xuất PNG 2400×3600px qua server-side Sharp, idempotent (SHA-256) |
-| 📱 **Responsive** | Desktop/tablet/mobile với touch gestures |
-| 🔄 **Undo/Redo** | 50 bước lịch sử chỉnh sửa (Zustand) |
+| Tính năng | Trạng thái |
+|-----------|-----------|
+| 🎨 Dual Canvas (Nam/Nữ) với chế độ Mirror | ✅ |
+| ✏️ Text Editor — font, màu, kích thước (Fabric.js IText) | ✅ |
+| 🖼️ Upload ảnh — tự động resize + thumbnail (Sharp) | ✅ |
+| 📦 Asset Library — phân loại, tìm kiếm, phân trang | ✅ |
+| 📤 Export PNG 2400×3600, PDF (server-side Sharp) | ✅ |
+| 🔄 Undo/Redo — 50 bước lịch sử | ⏳ Tích hợp canvas |
+| 📱 Responsive — mobile/tablet/desktop | ⏳ Tích hợp canvas |
+| 🛡️ Validation — Zod schema, rate limiting, CORS | ✅ |
 
 ---
 
-## Stack Công nghệ
+## Stack công nghệ
 
-| Lớp | Công nghệ | Version |
-|-----|-----------|---------|
-| **Client** | React, TypeScript, Vite, Fabric.js | 19 / 5.8 / 6.3 / 7.4+ |
-| **Server** | Express, Sharp, Zod | 5.1 / 0.35 / 4.4 |
-| **State** | Zustand | — |
-| **Testing** | Vitest, Supertest | 4 / 7 |
-| **Tooling** | ESLint 9, Prettier 3, Husky 9 | — |
-| **Package Manager** | pnpm | 9.9 |
-| **Runtime** | Node.js | 20+ |
+| Lớp | Công nghệ |
+|-----|----------|
+| **Client** | React 19, TypeScript 5.8, Vite 6, Fabric.js ≥7.4 |
+| **Server** | Express 5, TypeScript, Sharp 0.35 |
+| **State** | Zustand + Zod |
+| **Testing** | Vitest 4, Supertest |
+| **Tooling** | ESLint 9 (flat config), Prettier 3, Husky 9 |
+| **Package Manager** | pnpm 9 |
+| **Runtime** | Node.js ≥20 |
 
 ---
 
 ## Bắt đầu nhanh
 
+### Yêu cầu
+
+- **Node.js** ≥ 20.0.0
+- **pnpm** ≥ 9.0.0
+
+### Cài đặt & chạy
+
 ```bash
-# Cài đặt
+# Clone repo
 git clone <repo-url>
 cd dual-canvas-editor
+
+# Cài dependencies
 pnpm install
 
-# Chạy development (client + server)
+# Chạy dev — client + server đồng thời
 pnpm dev
 # → Client: http://localhost:5173
 # → Server: http://localhost:4000
 
-# Kiểm tra server
-curl http://localhost:4000/api/health
-# → {"ok":true,"service":"dual-canvas-editor","version":"0.1.0"}
+# Hoặc chạy riêng từng phần
+pnpm dev:client   # Chỉ client
+pnpm dev:server   # Chỉ server
 ```
 
-### Scripts
+### Kiểm tra
 
-| Lệnh | Mô tả |
-|------|-------|
-| `pnpm dev` | Chạy client + server song song |
-| `pnpm dev:client` | Chạy riêng client (port 5173) |
-| `pnpm dev:server` | Chạy riêng server (port 4000) |
-| `pnpm build` | Build cả hai packages |
-| `pnpm check` | Lint + TypeScript check |
-| `pnpm test` | Chạy toàn bộ tests (Vitest) |
-| `pnpm lint` | ESLint toàn bộ workspace |
-| `pnpm format` | Prettier format |
+```bash
+pnpm check        # Lint + TypeScript
+pnpm test         # Chạy test (44 tests server + contract tests client)
+pnpm build        # Build production
+```
 
 ---
 
@@ -74,81 +77,78 @@ curl http://localhost:4000/api/health
 ```
 dual-canvas-editor/
 ├── client/                      # React 19 SPA (Vite)
-│   └── src/
-│       ├── App.tsx              # Root component
-│       ├── api/                 # API client layer (fetch-based)
-│       └── __tests__/           # Contract tests
-├── server/                      # Express 5 REST API
-│   └── src/
-│       ├── index.ts             # Express bootstrap + middleware
-│       ├── config.ts            # Centralized configuration
-│       ├── routes/              # API endpoints
-│       ├── services/            # Business logic (upload, export, assets)
-│       ├── middleware/          # Rate-limit, validate, error-handler
-│       ├── schemas/             # Zod validation schemas
-│       └── types/               # Shared TypeScript interfaces
-├── architecture/                # Architecture documents
-├── docs/                        # Documentation (bạn đang ở đây!)
-└── .goclaw-project/             # Team project artifacts
+│   ├── src/
+│   │   ├── main.tsx             # Entry point
+│   │   ├── App.tsx              # Root component
+│   │   ├── api/                 # API client (fetch wrapper, types)
+│   │   └── __tests__/           # Contract tests
+│   └── vitest.config.ts
+├── server/                      # Express 5 API
+│   ├── src/
+│   │   ├── index.ts             # Server entry (port 4000)
+│   │   ├── config.ts            # Cấu hình tập trung
+│   │   ├── routes/              # health, upload, assets, export, fonts
+│   │   ├── services/            # upload, asset, export, cleanup
+│   │   ├── middleware/          # error-handler, rate-limiter, validate
+│   │   ├── schemas/             # Zod: canvas-state, export-request, upload, asset-query
+│   │   ├── types/               # asset, canvas, export
+│   │   └── assets/fonts/        # 7 font WOFF2 files
+│   └── vitest.config.ts
+├── architecture/
+│   ├── ARCHITECTURE.md          # Kiến trúc hệ thống + component tree
+│   └── ADR.md                   # 7 Architecture Decision Records
+├── design/
+│   └── UI_SPEC.md               # UI spec — tokens, component states, responsive
+├── docs/
+│   ├── README.md                # File này
+│   ├── USER_GUIDE.md            # Hướng dẫn sử dụng
+│   └── SETUP.md                 # Hướng dẫn cài đặt dev
+├── .github/workflows/ci.yml     # CI pipeline
+├── pnpm-workspace.yaml          # Monorepo workspace
+└── package.json                 # Root config
 ```
 
 ---
 
 ## API Endpoints
 
-| Method | Endpoint | Mô tả |
-|--------|----------|-------|
-| `GET` | `/api/health` | Health check |
-| `POST` | `/api/v1/upload` | Upload ảnh (multipart) |
-| `GET` | `/api/v1/assets` | Danh sách assets (phân trang) |
-| `GET` | `/api/v1/fonts` | Danh sách font |
-| `POST` | `/api/v1/export` | Tạo export job (idempotent) |
-| `GET` | `/api/v1/export/:id` | Poll trạng thái export |
+Base URL: `http://localhost:4000/api/v1`
 
-### Ví dụ
+| Method | Endpoint | Mô tả |
+|--------|---------|-------|
+| `GET` | `/health` | Health check — `{"ok":true, "service":"dual-canvas-editor"}` |
+| `POST` | `/upload` | Upload ảnh (multipart) — trả về Asset JSON |
+| `GET` | `/assets?category=&tags=&search=` | Danh sách asset, có phân trang |
+| `POST` | `/export` | Tạo export job (idempotent theo hash canvas state) |
+| `GET` | `/export/:id` | Poll trạng thái export job |
+| `GET` | `/fonts` | Danh sách font có sẵn |
+
+### Ví dụ nhanh
 
 ```bash
+# Health check
+curl http://localhost:4000/api/v1/health
+
 # Upload ảnh
-curl -X POST http://localhost:4000/api/v1/upload \
-  -F "file=@design.png" \
-  -F "category=upload"
+curl -F "file=@design.png" -F "category=upload" -F "tags=summer,t-shirt" \
+  http://localhost:4000/api/v1/upload
 
-# Lấy danh sách assets
-curl "http://localhost:4000/api/v1/assets?category=upload&limit=20"
-
-# Export thiết kế
+# Export
 curl -X POST http://localhost:4000/api/v1/export \
   -H "Content-Type: application/json" \
-  -d '{"canvasState":{...},"format":"png","quality":"high"}'
+  -d '{"canvasState": {...}, "format": "png", "quality": "standard"}'
 ```
 
 ---
 
-## Quyết định Kiến trúc (ADRs)
+## Tài liệu liên quan
 
-| ADR | Quyết định |
-|-----|-----------|
-| ADR-001 | **Fabric.js >= 7.4.0** — IText editing, SVG export, JSON serialization |
-| ADR-002 | **Server-side Sharp export** — nhẹ hơn Puppeteer, bảo mật hơn |
-| ADR-003 | **Zustand state** — 1KB bundle, tích hợp tốt với Fabric.js |
-| ADR-004 | **Local disk (MVP) → S3+CDN (prod)** |
-| ADR-005 | **No auth (MVP)** — rate limit per-IP |
-| ADR-007 | **SHA-256 idempotent export** — tránh duplicate jobs |
-
-Xem đầy đủ: [`architecture/ADR.md`](../architecture/ADR.md)
-
----
-
-## Tài liệu
-
-- 👤 **[User Guide](USER_GUIDE.md)** — Hướng dẫn sử dụng
-- ⚙️ **[Setup Guide](SETUP.md)** — Cài đặt môi trường dev
-- 🏗️ **[Architecture](../architecture/ARCHITECTURE.md)** — Kiến trúc hệ thống
-- 🎨 **[UI Design](../.goclaw-project/ui-design.md)** — Visual system + component states
-- ✅ **[QA Strategy](../.goclaw-project/qa-testing-strategy.md)** — Test plan
-
----
-
-## License
-
-MIT
+| File | Nội dung |
+|------|---------|
+| [docs/USER_GUIDE.md](USER_GUIDE.md) | Hướng dẫn sử dụng chi tiết |
+| [docs/SETUP.md](SETUP.md) | Cài đặt môi trường dev, env vars, troubleshooting |
+| [architecture/ARCHITECTURE.md](../architecture/ARCHITECTURE.md) | Kiến trúc hệ thống |
+| [architecture/ADR.md](../architecture/ADR.md) | Architecture Decision Records |
+| [design/UI_SPEC.md](../design/UI_SPEC.md) | UI specification — tokens, component states |
+| [code-review.md](../code-review.md) | Code review findings |
+| [CR-CHECKLIST.md](../CR-CHECKLIST.md) | Code review checklist |
