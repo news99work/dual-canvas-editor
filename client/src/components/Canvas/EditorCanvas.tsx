@@ -15,42 +15,10 @@ const GARMENT_COLORS: Record<string, string> = {
   '#2E7D32': '#2E7D32', '#6D5EF8': '#6D5EF8', '#EF6C00': '#EF6C00', '#616161': '#616161',
 };
 
-function drawShirt(fc: Canvas, px: number, py: number, pw: number, ph: number, color: string) {
-  const cx = px + pw / 2;
-  const neckW = pw * 0.3;
-  const sleeveH = ph * 0.25;
-  const bodyTop = py + sleeveH * 0.7;
-
-  const path = new (fabric as any).Path(
-    `M ${cx - neckW/2} ${py + ph*0.06}
-     L ${cx - neckW/2} ${py + ph*0.10}
-     L ${cx - pw*0.35} ${py + ph*0.02}
-     L ${px + 10} ${bodyTop}
-     L ${px + 10} ${py + ph - 10}
-     L ${px + pw - 10} ${py + ph - 10}
-     L ${px + pw - 10} ${bodyTop}
-     L ${cx + pw*0.35} ${py + ph*0.02}
-     L ${cx + neckW/2} ${py + ph*0.10}
-     L ${cx + neckW/2} ${py + ph*0.06}
-     Z`,
-    {
-      fill: color,
-      stroke: 'rgba(0,0,0,0.15)',
-      strokeWidth: 1,
-      selectable: false,
-      evented: false,
-      excludeFromExport: true,
-    }
-  );
-  fc.add(path);
-  fc.sendObjectToBack(path);
-  return path;
-}
-
 export default function EditorCanvas({ side, width, height, printArea }: EditorCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fcRef = useRef<Canvas | null>(null);
-  const shirtRef = useRef<any>(null);
+  const garmentRef = useRef<any>(null);
   const layers = useCanvasState((s) => (side === 'nam' ? s.namLayers : s.nuLayers));
   const garmentColor = useCanvasState((s) => s.garmentColor);
   const activeSide = useCanvasState((s) => s.activeSide);
@@ -59,26 +27,40 @@ export default function EditorCanvas({ side, width, height, printArea }: EditorC
   const syncLayer = useCanvasState((s) => s.syncLayer);
   const colorHex = GARMENT_COLORS[garmentColor] || garmentColor;
 
+  // Init canvas + load SVG garment
   useEffect(() => {
     if (!canvasRef.current || fcRef.current) return;
     const fc = new Canvas(canvasRef.current, {
       width, height,
-      backgroundColor: 'transparent',
+      backgroundColor: 'white',
       selection: true,
       preserveObjectStacking: true,
     });
 
-    // Draw garment mockup
-    const shirt = drawShirt(fc, 10, 10, width - 20, height - 20, colorHex);
-    shirtRef.current = shirt;
+    // Load SVG garment mockup
+    (fabric as any).loadSVGFromURL('/assets/shirt-front.svg').then((objects: any[]) => {
+      const group = new (fabric as any).Group(objects, {
+        left: width / 2,
+        top: height / 2,
+        originX: 'center',
+        originY: 'center',
+        selectable: false,
+        evented: false,
+        excludeFromExport: true,
+      });
+      // Scale to fit canvas
+      const scale = Math.min((width - 40) / (group.width || 300), (height - 40) / (group.height || 400));
+      group.set({ scaleX: scale, scaleY: scale });
+      garmentRef.current = group;
+      fc.add(group);
+      fc.sendObjectToBack(group);
+      fc.requestRenderAll();
+    });
 
-    // Print area indicator
+    // Print area guide
     const guide = new Rect({
       left: printArea.x, top: printArea.y, width: printArea.w, height: printArea.h,
-      fill: 'transparent',
-      stroke: 'rgba(255,255,255,0.15)',
-      strokeWidth: 1,
-      strokeDashArray: [6, 4],
+      fill: 'transparent', stroke: 'rgba(109,94,248,.4)', strokeWidth: 2, strokeDashArray: [8, 4],
       selectable: false, evented: false,
     });
     fc.add(guide);
@@ -91,7 +73,6 @@ export default function EditorCanvas({ side, width, height, printArea }: EditorC
       if (e.selected?.[0]) setActiveLayer(e.selected[0].__layerId || null);
     });
     fc.on('selection:cleared', () => setActiveLayer(null));
-
     fc.on('object:modified', (e: any) => {
       const obj = e.target;
       if (!obj?.__layerId) return;
@@ -115,55 +96,42 @@ export default function EditorCanvas({ side, width, height, printArea }: EditorC
     return () => { fc.dispose(); fcRef.current = null; };
   }, []);
 
-  // Update garment color
-  useEffect(() => {
-    const fc = fcRef.current;
-    if (!fc) return;
-    if (shirtRef.current) fc.remove(shirtRef.current);
-    const shirt = drawShirt(fc, 10, 10, width - 20, height - 20, colorHex);
-    shirtRef.current = shirt;
-    fc.requestRenderAll();
-  }, [garmentColor, colorHex]);
-
-  // Sync layers
+  // Sync layers from store
   const layerMapRef = useRef<Map<string, any>>(new Map());
 
   useEffect(() => {
     const fc = fcRef.current;
     if (!fc) return;
     const currentIds = new Set(layers.map((l) => l.id));
-    const existingMap = layerMapRef.current;
+    const em = layerMapRef.current;
 
-    for (const [id, obj] of existingMap) {
-      if (!currentIds.has(id)) { fc.remove(obj); existingMap.delete(id); }
+    for (const [id, obj] of em) {
+      if (!currentIds.has(id)) { fc.remove(obj); em.delete(id); }
     }
 
     layers.forEach((layer) => {
-      const existing = existingMap.get(layer.id);
-      const lx = layer.x, ly = layer.y;
-
-      if (existing) {
-        existing.set({ left: lx, top: ly, width: layer.width, height: layer.height, angle: layer.rotation, scaleX: layer.scaleX, scaleY: layer.scaleY });
-        if (layer.type === 'text') existing.set({ text: layer.text, fontSize: layer.fontSize, fontFamily: layer.fontFamily, fill: layer.fill });
-        existing.setCoords();
+      const ex = em.get(layer.id);
+      if (ex) {
+        ex.set({ left: layer.x, top: layer.y, width: layer.width, height: layer.height, angle: layer.rotation, scaleX: 1, scaleY: 1 });
+        if (layer.type === 'text') ex.set({ text: layer.text, fontSize: layer.fontSize, fontFamily: layer.fontFamily, fill: layer.fill });
+        ex.setCoords();
       } else if (layer.type === 'image' && layer.imageUrl) {
         FabricImage.fromURL(layer.imageUrl, { crossOrigin: 'anonymous' }).then((img) => {
-          img.set({ left: lx, top: ly, scaleX: layer.width / (img.width || 150), scaleY: layer.height / (img.height || 150), angle: layer.rotation });
+          img.set({ left: layer.x, top: layer.y, scaleX: layer.width / (img.width || 150), scaleY: layer.height / (img.height || 150), angle: layer.rotation });
           (img as any).__layerId = layer.id; (img as any).__layerType = 'image'; (img as any).__imageUrl = layer.imageUrl;
           img.setControlsVisibility({ mtr: true });
-          fc.add(img); existingMap.set(layer.id, img); fc.requestRenderAll();
+          fc.add(img); em.set(layer.id, img); fc.requestRenderAll();
         });
       } else {
-        const txt = new (fabric as any).Text(layer.text || '', { left: lx, top: ly, fontSize: layer.fontSize || 24, fontFamily: layer.fontFamily || 'Inter', fill: layer.fill || '#fff', angle: layer.rotation });
+        const txt = new (fabric as any).Text(layer.text || '', { left: layer.x, top: layer.y, fontSize: layer.fontSize || 24, fontFamily: layer.fontFamily || 'Inter', fill: layer.fill || '#000', angle: layer.rotation });
         (txt as any).__layerId = layer.id; (txt as any).__layerType = 'text';
         txt.setControlsVisibility({ mtr: true });
-        fc.add(txt); existingMap.set(layer.id, txt);
+        fc.add(txt); em.set(layer.id, txt);
       }
     });
     fc.requestRenderAll();
-  }, [layers, printArea]);
+  }, [layers]);
 
-  const isActive = activeSide === side;
   return (
     <div className="editor-canvas" onClick={() => setActiveSide(side)} style={{ borderRadius: 12, overflow: 'hidden' }}>
       <canvas ref={canvasRef} />
