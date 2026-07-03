@@ -93,7 +93,18 @@ export default function EditorCanvas({ side, width, height, printArea }: EditorC
     });
 
     fcRef.current = fc;
-    return () => { fc.dispose(); fcRef.current = null; };
+    return () => {
+      fc.dispose();
+      fcRef.current = null;
+      if (canvasRef.current) {
+        // Replace canvas element to allow re-initialization
+        const parent = canvasRef.current.parentNode;
+        if (parent) {
+          const clone = canvasRef.current.cloneNode(true) as HTMLCanvasElement;
+          parent.replaceChild(clone, canvasRef.current);
+        }
+      }
+    };
   }, []);
 
   // Sync layers from store
